@@ -1,0 +1,20 @@
+@startuml DFD_Level1_Classify
+left to right direction
+
+rectangle Admin
+
+usecase "1.3.1 Extract Features" as F1
+usecase "1.3.2 Apply ML Model" as F2
+usecase "1.3.3 Check Blacklist DB" as F3
+usecase "1.3.4 Final Classification" as F4
+
+F1 --> F2 : Features
+F2 --> F3 : Preliminary Label
+F3 --> F4 : Blacklist Score
+F2 --> F4 : ML Score
+
+F4 --> Admin : FP/FN Feedback (optional)
+
+Admin --> F3 : Update Blacklist
+
+@enduml

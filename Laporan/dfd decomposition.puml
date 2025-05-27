@@ -1,0 +1,39 @@
+@startuml Decomposition
+left to right direction
+title Process Decomposition – Sistem Deteksi Spam Email
+
+skinparam usecase {
+BackgroundColor #ffffff
+BorderColor black
+FontSize 12
+}
+' ========= CONTEXT =========
+usecase "0.0\nEmail Filter" as P0
+
+' ========= LEVEL 0 =========
+usecase "1.1\nReceive Email" as P1
+usecase "1.2\nPreprocess Email" as P2
+usecase "1.3\nClassify Email" as P3
+usecase "1.4\nReturn Result" as P4
+usecase "1.5\nArchive + Train Model" as P5
+
+' ========= LEVEL 1 (sub dari 1.3) =========
+usecase "1.3.1\nExtract Features" as F1
+usecase "1.3.2\nApply ML Model" as F2
+usecase "1.3.3\nCheck Blacklist" as F3
+usecase "1.3.4\nFinal Classification" as F4
+
+' ========= RELASI ANTAR PROSES =========
+P0 --> P1
+P0 --> P2
+P0 --> P3
+P0 --> P4
+P0 --> P5
+
+P3 --> F1
+F1 --> F2
+F2 --> F3
+F2 --> F4
+F3 --> F4
+
+@enduml

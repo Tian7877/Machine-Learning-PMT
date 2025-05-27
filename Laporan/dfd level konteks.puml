@@ -1,0 +1,20 @@
+@startuml DFD_Context
+left to right direction
+' Context Level DFD: Sistem Deteksi Spam Email
+
+rectangle User
+rectangle Admin
+rectangle EmailServer
+
+usecase "0.0\nEmail Filter" as System
+
+User --> System : Kirim Email
+System --> User : Hasil Deteksi Spam
+
+Admin --> System : Training / Update Model
+System --> Admin : Laporan Kinerja
+
+EmailServer --> System : Email Masuk
+System --> EmailServer : Hasil Klasifikasi
+
+@enduml

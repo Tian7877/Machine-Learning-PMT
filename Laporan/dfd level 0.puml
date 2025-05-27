@@ -1,0 +1,26 @@
+@startuml DFD_Level0
+' left to right direction
+
+rectangle User
+rectangle Admin
+rectangle EmailServer
+
+usecase "1.1 Receive Email" as P1
+usecase "1.2 Preprocess Email" as P2
+usecase "1.3 Classify Email" as P3
+usecase "1.4 Return Result" as P4
+usecase "1.5 Archive + Train Model" as P5
+
+User --> P1 : Send Email
+EmailServer --> P1 : Forward Email
+P1 --> P2 : Raw Email
+P2 --> P3 : Cleaned Features
+P3 --> P4 : Classification Result
+P4 --> User : Spam / Not Spam
+P4 --> EmailServer : Spam Tag / Header
+
+Admin --> P5 : Upload Dataset / Schedule Training
+P3 --> P5 : Output + Confidence
+P5 --> Admin : Training Logs
+
+@enduml
