@@ -81,10 +81,16 @@
                             Apakah hasil prediksi sudah sesuai?
                           </div>
                           <div class="modal-footer">
-                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">✅ Sesuai</button>
                             <form method="post" action="/feedback">
                                 <input type="hidden" name="message" value="{{ email.body }}">
-                                <input type="hidden" name="original_label" value="{{ email.label }}">
+                                <input type="hidden" name="predicted_label" value="{{ email.label }}">
+                                <input type="hidden" name="feedback" value="correct">
+                                <button type="submit" class="btn btn-success">✅ Sesuai</button>
+                            </form>
+                            <form method="post" action="/feedback">
+                                <input type="hidden" name="message" value="{{ email.body }}">
+                                <input type="hidden" name="predicted_label" value="{{ email.label }}">
+                                <input type="hidden" name="feedback" value="incorrect">
                                 <button type="submit" class="btn btn-danger">❌ Tidak Sesuai</button>
                             </form>
                           </div>

@@ -2,17 +2,21 @@ import sys
 import os
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from main import run_training 
 from src.inference import load_model, predict_spam
 from web_app.email_fetcher import fetch_emails
 
 app = Flask(__name__)
+app.secret_key = "kelompok_4_spam_filter"
+# Load model and vectorizer 
 model, vectorizer = load_model()
 
+# Konfigurasi email
 EMAIL_USER = "asepspakbor444@gmail.com"
 EMAIL_PASS = "kmwy hbwb tpyg yusk"
 PER_PAGE = 10
+
 
 @app.route('/')
 def index():
@@ -51,20 +55,31 @@ def index():
 @app.route("/feedback", methods=["POST"])
 def feedback():
     message = request.form.get("message")
-    original_label = request.form.get("original_label")
-    inverted_label = "ham" if original_label == "SPAM" else "spam"
+    predicted_label = request.form.get("predicted_label")  # 'SPAM' atau 'HAM'
+    feedback = request.form.get("feedback")  # 'correct' atau 'incorrect'
 
-    data_path = os.path.abspath("data/email_spam_indo.csv")
-    print("📌 Path CSV yang ditulis:", data_path)
+    if not message or not predicted_label or not feedback:
+        flash("❌ Feedback tidak valid.")
+        return redirect(url_for("index"))
 
-    df_new = pd.DataFrame([{"Pesan": message, "Kategori": inverted_label}])
-    df_new.to_csv(data_path, mode='a', header=False, index=False)
+    # Tentukan label yang disimpan berdasarkan feedback
+    if predicted_label == "SPAM":
+        label = "spam" if feedback == "correct" else "ham"
+    else:  # predicted HAM
+        label = "ham" if feedback == "correct" else "spam"
 
-    print("✅ Baris ditambahkan:", message[:50], "| Label:", inverted_label)
-
-    run_training()
+    # Simpan ke CSV
+    csv_path = os.path.abspath("data/email_spam_indo.csv")
+    try:
+        df_new = pd.DataFrame([{"Pesan": message, "Kategori": label}])
+        df_new.to_csv(csv_path, mode='a', header=False, index=False)
+        print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
+        run_training()
+        flash("✔️ Feedback disimpan & model diperbarui.")
+    except Exception as e:
+        print(f"❌ Error menyimpan feedback: {e}")
+        flash("❌ Gagal menyimpan feedback.")
 
     return redirect(url_for("index"))
-
 if __name__ == "__main__":
     app.run(debug=True)
