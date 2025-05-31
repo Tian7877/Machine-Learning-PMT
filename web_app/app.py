@@ -79,8 +79,20 @@ def feedback():
 
     csv_path = os.path.abspath("data/email_spam_indo.csv")
     try:
-        df_new = pd.DataFrame([{"Pesan": message, "Kategori": label}])
-        df_new.to_csv(csv_path, mode='a', header=False, index=False)
+        # Hapus newline internal agar jadi satu baris
+        message = message.replace('\r', ' ').replace('\n', ' ').strip()
+
+        with open(csv_path, 'a+', encoding='utf-8') as f:
+            f.seek(0, os.SEEK_END)
+            if f.tell() > 0:
+                f.seek(f.tell() - 1)
+                if f.read(1) != '\n':
+                    f.write('\n')
+
+        # Menulis secara manual dengan kontrol penuh
+        with open(csv_path, mode='a', newline='', encoding='utf-8') as f:
+            f.write(f"{label},\"{message.replace('"', '""')}\"\n")
+
         print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
         run_training()
         flash("✔️ Feedback disimpan & model diperbarui.")
