@@ -1,7 +1,9 @@
 import sys
 import os
+import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+from main import run_training 
 from src.inference import load_model, predict_spam
 from web_app.email_fetcher import fetch_emails
 
@@ -46,6 +48,23 @@ def index():
                            has_next=has_next,
                            filter=filter_val)
 
+@app.route("/feedback", methods=["POST"])
+def feedback():
+    message = request.form.get("message")
+    original_label = request.form.get("original_label")
+    inverted_label = "ham" if original_label == "SPAM" else "spam"
+
+    data_path = os.path.abspath("data/email_spam_indo.csv")
+    print("📌 Path CSV yang ditulis:", data_path)
+
+    df_new = pd.DataFrame([{"Pesan": message, "Kategori": inverted_label}])
+    df_new.to_csv(data_path, mode='a', header=False, index=False)
+
+    print("✅ Baris ditambahkan:", message[:50], "| Label:", inverted_label)
+
+    run_training()
+
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True)
