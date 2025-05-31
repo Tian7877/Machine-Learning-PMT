@@ -1,7 +1,12 @@
 import joblib
+from pathlib import Path
 from src.preprocessing import clean_text
 
-def load_model(model_path="model/spam_model.pkl", vec_path="model/tfidf_vectorizer.pkl"):
+def load_model():
+    # Menggunakan __file__ untuk mendapatkan path absolut file ini
+    base_dir = Path(__file__).resolve().parent.parent  # ini akan mengarah ke project root
+    model_path = base_dir / "model/spam_model.pkl"
+    vec_path = base_dir / "model/tfidf_vectorizer.pkl"      
     """
     Memuat model dan TF-IDF vectorizer dari file .pkl.
     """

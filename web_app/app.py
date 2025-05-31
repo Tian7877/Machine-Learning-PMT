@@ -1,5 +1,6 @@
 import sys
 import os
+from pathlib import Path
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from flask import Flask, render_template, request, redirect, url_for, flash
@@ -69,7 +70,8 @@ def feedback():
         label = "ham" if feedback == "correct" else "spam"
 
     # Simpan ke CSV
-    csv_path = os.path.abspath("data/email_spam_indo.csv")
+    base_dir = Path(__file__).resolve().parent.parent  # menggunakan __file__
+    csv_path = base_dir / "data/email_spam_indo.csv"
     try:
         df_new = pd.DataFrame([{"Pesan": message, "Kategori": label.strip()}])
         df_new.to_csv(csv_path, mode='a', header=False, index=False, )
