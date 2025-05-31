@@ -71,8 +71,8 @@ def feedback():
     # Simpan ke CSV
     csv_path = os.path.abspath("data/email_spam_indo.csv")
     try:
-        df_new = pd.DataFrame([{"Pesan": message, "Kategori": label}])
-        df_new.to_csv(csv_path, mode='a', header=False, index=False)
+        df_new = pd.DataFrame([{"Pesan": message.strip(), "Kategori": label}])
+        df_new.to_csv(csv_path, mode='a', header=False, index=False, )
         print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
         run_training()
         flash("✔️ Feedback disimpan & model diperbarui.")
