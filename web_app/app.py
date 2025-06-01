@@ -2,69 +2,76 @@ import sys
 import os
 import pandas as pd
 import csv
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+# Tambahkan path agar modul bisa diimpor
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from flask import Flask, render_template, request, redirect, url_for, flash
-from main import run_training 
+
+# Import modul
+from main import run_training
 from src.inference import load_model, predict_spam
 from web_app.email_fetcher import fetch_emails
 
 app = Flask(__name__)
-app.secret_key = "kelompok_4_spam_filter"
+CORS(app)  # Aktifkan CORS untuk semua route
 
 # Konfigurasi email
 EMAIL_USER = "asepspakbor444@gmail.com"
 EMAIL_PASS = "kmwy hbwb tpyg yusk"
 PER_PAGE = 10
 
-@app.route('/')
-def index():
-    # Load model and vectorizer 
-    model, vectorizer = load_model()
-    page = int(request.args.get("page", 1))
-    filter_val = request.args.get("filter", "all")
-    offset = (page - 1) * PER_PAGE
 
-    raw_emails = fetch_emails(EMAIL_USER, EMAIL_PASS, limit=PER_PAGE * 2, offset=offset)
-    processed_emails = []
-    for email_data in raw_emails:
-        label, prob = predict_spam(email_data["body"], model, vectorizer)
-        processed_emails.append({
-            "subject": email_data["subject"],
-            "preview": email_data["preview"],
-            "body": email_data["body"],
-            "label": label,
-            "confidence": round(prob, 2)
+@app.route('/emails', methods=["GET"])
+def get_emails():
+    try:
+        model, vectorizer = load_model()
+        page = int(request.args.get("page", 1))
+        filter_val = request.args.get("filter", "all")
+        offset = (page - 1) * PER_PAGE
+
+        raw_emails = fetch_emails(EMAIL_USER, EMAIL_PASS, limit=PER_PAGE * 2, offset=offset)
+        processed_emails = []
+        for email_data in raw_emails:
+            label, prob = predict_spam(email_data["body"], model, vectorizer)
+            processed_emails.append({
+                "subject": email_data["subject"],
+                "preview": email_data["preview"],
+                "body": email_data["body"],
+                "label": label,
+                "confidence": round(prob, 2)
+            })
+
+        if filter_val == "spam":
+            processed_emails = [e for e in processed_emails if e["label"] == "SPAM"]
+        elif filter_val == "ham":
+            processed_emails = [e for e in processed_emails if e["label"] == "HAM"]
+
+        displayed_emails = processed_emails[:PER_PAGE]
+        has_next = len(processed_emails) > PER_PAGE
+
+        return jsonify({
+            "success": True,
+            "emails": displayed_emails,
+            "page": page,
+            "per_page": PER_PAGE,
+            "has_next": has_next,
+            "filter": filter_val
         })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
-    if filter_val == "spam":
-        processed_emails = [e for e in processed_emails if e["label"] == "SPAM"]
-    elif filter_val == "ham":
-        processed_emails = [e for e in processed_emails if e["label"] == "HAM"]
-
-    displayed_emails = processed_emails[:PER_PAGE]
-    has_next = len(processed_emails) > PER_PAGE
-
-    return render_template("index.html",
-                           emails=enumerate(displayed_emails),
-                           page=page,
-                           per_page=PER_PAGE,
-                           has_next=has_next,
-                           filter=filter_val)
 
 @app.route("/feedback", methods=["POST"])
 def feedback():
-    message = request.form.get("message")
-    predicted_label = request.form.get("predicted_label")
-    feedback = request.form.get("feedback")
+    data = request.get_json()
 
-    print("📨 FEEDBACK POST RECEIVED:")
-    print("message:", message[:50] if message else "[EMPTY]")
-    print("predicted_label:", predicted_label)
-    print("feedback:", feedback)
+    message = data.get("message")
+    predicted_label = data.get("predicted_label")
+    feedback = data.get("feedback")
 
     if not message or not predicted_label or not feedback:
-        flash("❌ Feedback tidak valid.")
-        return redirect(url_for("index"))
+        return jsonify({"success": False, "message": "❌ Feedback tidak valid."}), 400
 
     predicted_label = predicted_label.strip().upper()
     feedback = feedback.strip().lower()
@@ -74,15 +81,15 @@ def feedback():
     elif predicted_label == "HAM":
         label = "ham" if feedback == "correct" else "spam"
     else:
-        flash("❌ Label tidak dikenali.")
-        return redirect(url_for("index"))
+        return jsonify({"success": False, "message": "❌ Label tidak dikenali."}), 400
 
     csv_path = os.path.abspath("data/email_spam_indo.csv")
+
     try:
         # Normalisasi message
         message = message.replace('\r', ' ').replace('\n', ' ').strip()
 
-        # Cek baris terakhir file CSV, apakah sudah newline
+        # Cek apakah newline dibutuhkan
         with open(csv_path, 'rb+') as f:
             f.seek(0, os.SEEK_END)
             if f.tell() == 0:
@@ -95,7 +102,7 @@ def feedback():
             if need_newline:
                 f.write(b'\n')
 
-        # Append data feedback ke CSV
+        # Tulis ke CSV
         with open(csv_path, 'a', newline='', encoding='utf-8') as f:
             if '"' in message or ',' in message:
                 message_escaped = message.replace('"', '""')
@@ -103,20 +110,16 @@ def feedback():
             else:
                 f.write(f'{label},{message}\n')
 
-        print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
-
+        # Lakukan retraining
         try:
             run_training(iteration='2')
-            flash("✔️ Feedback disimpan & model diperbarui.")
+            return jsonify({"success": True, "message": "✔️ Feedback disimpan & model diperbarui."}), 200
         except Exception as e:
-            print(f"❌ Error saat training: {e}")
-            flash("⚠️ Feedback disimpan tapi gagal update model")
+            return jsonify({"success": True, "message": "⚠️ Feedback disimpan tapi gagal update model", "error": str(e)}), 200
 
     except Exception as e:
-        print(f"❌ Error menyimpan feedback: {e}")
-        flash("❌ Gagal menyimpan feedback.")
+        return jsonify({"success": False, "message": "❌ Gagal menyimpan feedback.", "error": str(e)}), 500
 
-    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True)
