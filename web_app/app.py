@@ -79,15 +79,18 @@ def feedback():
 
     csv_path = os.path.abspath("data/email_spam_indo.csv")
     try:
+        # Normalisasi message
         message = message.replace('\r', ' ').replace('\n', ' ').strip()
         
+        # Tulis ke CSV dengan format: spam,message (tanpa quotes di label)
         with open(csv_path, 'a', newline='', encoding='utf-8') as f:
-            # Custom formatting:
-            if any([c in message for c in [',', '"', '\n', '\r']]):
-                message = message.replace('"', '""')  # Escape quotes
-                f.write(f'{label},"{message}"\n')  # Hanya message yang dikutip
+            if '"' in message or ',' in message:
+                # Escape quotes di message dan wrap dengan quotes jika diperlukan
+                message_escaped = message.replace('"', '""')
+                f.write(f'{label},"{message_escaped}"\n')
             else:
-                f.write(f'{label},{message}\n')  # Tanpa quotes
+                # Tulis biasa jika tidak ada karakter spesial
+                f.write(f'{label},{message}\n')
 
         print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
         
