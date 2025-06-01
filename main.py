@@ -4,10 +4,10 @@ import subprocess
 import sys
 import os
 
-def run_training():
+def run_training(iteration):
     print("=== TRAINING MODE ===")
     df = load_and_prepare_data("data/email_spam_indo.csv")
-    model, vectorizer = train_model(df)
+    model, vectorizer = train_model(df, choice=iteration)
     save_model(model, vectorizer)
 
 def run_inference():
@@ -38,15 +38,19 @@ def run_web_app():
         print("\nServer dihentikan")
 
 if __name__ == "__main__":
-    print("Spam Detection System")
-    print("=====================")
-    print("1. Training model")
-    print("2. Jalankan Web App")
-    choice = input("Pilih opsi (1/2): ")
+    while True:
+        print("Spam Detection System")
+        print("=====================")
+        print("1. Training model")
+        print("2. Jalankan Web App")
+        choice = input("Pilih opsi (1/2): ")
 
-    if choice == "1":
-        run_training()
-    elif choice == "2":
-        run_web_app()
-    else:
-        print("Pilihan tidak valid.")
+        if choice == "1":
+            run_training(choice)
+            break
+        elif choice == "2":
+            run_web_app()
+            break
+        else:
+            print("Pilihan tidak valid. Masukan angka 1 atau 2 untuk memilih")
+            print()

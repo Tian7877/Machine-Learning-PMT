@@ -10,8 +10,7 @@ from web_app.email_fetcher import fetch_emails
 
 app = Flask(__name__)
 app.secret_key = "kelompok_4_spam_filter"
-# Load model and vectorizer 
-model, vectorizer = load_model()
+
 
 # Konfigurasi email
 EMAIL_USER = "asepspakbor444@gmail.com"
@@ -20,6 +19,8 @@ PER_PAGE = 10
 
 @app.route('/')
 def index():
+    # Load model and vectorizer 
+    model, vectorizer = load_model()
     page = int(request.args.get("page", 1))
     filter_val = request.args.get("filter", "all")
     offset = (page - 1) * PER_PAGE
@@ -95,7 +96,7 @@ def feedback():
         print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
         
         try:
-            run_training()
+            run_training(iteration='2')
             flash("✔️ Feedback disimpan & model diperbarui.")
         except Exception as e:
             print(f"❌ Error saat training: {e}")
