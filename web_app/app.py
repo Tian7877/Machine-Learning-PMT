@@ -11,7 +11,6 @@ from web_app.email_fetcher import fetch_emails
 app = Flask(__name__)
 app.secret_key = "kelompok_4_spam_filter"
 
-
 # Konfigurasi email
 EMAIL_USER = "asepspakbor444@gmail.com"
 EMAIL_PASS = "kmwy hbwb tpyg yusk"
@@ -82,19 +81,30 @@ def feedback():
     try:
         # Normalisasi message
         message = message.replace('\r', ' ').replace('\n', ' ').strip()
-        
-        # Tulis ke CSV dengan format: spam,message (tanpa quotes di label)
+
+        # Cek baris terakhir file CSV, apakah sudah newline
+        with open(csv_path, 'rb+') as f:
+            f.seek(0, os.SEEK_END)
+            if f.tell() == 0:
+                need_newline = False
+            else:
+                f.seek(-1, os.SEEK_END)
+                last_char = f.read(1)
+                need_newline = last_char != b'\n'
+
+            if need_newline:
+                f.write(b'\n')
+
+        # Append data feedback ke CSV
         with open(csv_path, 'a', newline='', encoding='utf-8') as f:
             if '"' in message or ',' in message:
-                # Escape quotes di message dan wrap dengan quotes jika diperlukan
                 message_escaped = message.replace('"', '""')
                 f.write(f'{label},"{message_escaped}"\n')
             else:
-                # Tulis biasa jika tidak ada karakter spesial
                 f.write(f'{label},{message}\n')
 
         print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
-        
+
         try:
             run_training(iteration='2')
             flash("✔️ Feedback disimpan & model diperbarui.")
