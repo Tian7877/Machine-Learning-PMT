@@ -79,23 +79,23 @@ def feedback():
 
     csv_path = os.path.abspath("data/email_spam_indo.csv")
     try:
-        # Hapus newline internal agar jadi satu baris
+        # Normalisasi message
         message = message.replace('\r', ' ').replace('\n', ' ').strip()
-
-        with open(csv_path, 'a+', encoding='utf-8') as f:
-            f.seek(0, os.SEEK_END)
-            if f.tell() > 0:
-                f.seek(f.tell() - 1)
-                if f.read(1) != '\n':
-                    f.write('\n')
-
-        # Menulis secara manual dengan kontrol penuh
-        with open(csv_path, mode='a', newline='', encoding='utf-8') as f:
-            f.write(f"{label},\"{message.replace('"', '""')}\"\n")
+        
+        # Handle quotes dengan csv writer
+        with open(csv_path, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+            writer.writerow([label, message])
 
         print(f"✅ Feedback disimpan: label={label} | message='{message[:40]}...'")
-        run_training()
-        flash("✔️ Feedback disimpan & model diperbarui.")
+        
+        try:
+            run_training()
+            flash("✔️ Feedback disimpan & model diperbarui.")
+        except Exception as e:
+            print(f"❌ Error saat training: {e}")
+            flash("⚠️ Feedback disimpan tapi gagal update model")
+
     except Exception as e:
         print(f"❌ Error menyimpan feedback: {e}")
         flash("❌ Gagal menyimpan feedback.")
