@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -21,7 +23,7 @@ def load_and_prepare_data(csv_path: str):
 
     return df
 
-def train_model(df: pd.DataFrame):
+def train_model(df: pd.DataFrame, choice):
     vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(df['clean_text'])
     y = df['label']
@@ -33,9 +35,18 @@ def train_model(df: pd.DataFrame):
 
     y_pred = model.predict(X_test)
 
-    print("Accuracy:", accuracy_score(y_test, y_pred))
-    print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
-    print("Classification Report:\n", classification_report(y_test, y_pred))
+    if choice != '2':
+        print("Accuracy:", accuracy_score(y_test, y_pred))
+        print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+        print("Classification Report:\n", classification_report(y_test, y_pred))
+        # Plot Confusion Matrix
+        cm = confusion_matrix(y_test, y_pred)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=['Ham', 'Spam'], yticklabels=['Ham', 'Spam'])
+        plt.xlabel('Predicted Label')
+        plt.ylabel('True Label')
+        plt.title('Confusion Matrix')
+        plt.show()
 
     return model, vectorizer
 
