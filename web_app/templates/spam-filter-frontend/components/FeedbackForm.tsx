@@ -11,6 +11,7 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | "">("");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const API_BASE = "http://localhost:5000";
 
@@ -35,6 +36,7 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
       if (data.success) {
         setMessage(data.message);
         setFeedback("");
+        setIsOpen(false);
       } else {
         setMessage("Gagal mengirim feedback: " + data.message);
       }
@@ -45,33 +47,61 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: 10 }}>
-      <label>
-        <input
-          type="radio"
-          name="feedback"
-          value="correct"
-          checked={feedback === "correct"}
-          onChange={() => setFeedback("correct")}
-          disabled={loading}
-        />
-        Prediksi benar
-      </label>
-      <label style={{ marginLeft: 10 }}>
-        <input
-          type="radio"
-          name="feedback"
-          value="incorrect"
-          checked={feedback === "incorrect"}
-          onChange={() => setFeedback("incorrect")}
-          disabled={loading}
-        />
-        Prediksi salah
-      </label>
-      <button type="submit" className="px-2 py-1 bg-blue-600 text-white rounded-md shadow transition-all hover:bg-blue-500 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 sm:mt-10 sm:ml-20" disabled={loading}>
-        {loading ? "Mengirim..." : "Kirim Feedback"}
+    <>
+      <button
+        onClick={() => setIsOpen(true)}
+        className="px-4 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-500"
+      >
+        Beri Feedback
       </button>
-      {message && <p style={{ marginTop: 10 }}>{message}</p>}
-    </form>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl font-bold"
+            >
+              &times;
+            </button>
+            <h2 className="text-lg font-semibold mb-4">Feedback Prediksi</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block">
+                  <input
+                    type="radio"
+                    name="feedback"
+                    value="correct"
+                    checked={feedback === "correct"}
+                    onChange={() => setFeedback("correct")}
+                    disabled={loading}
+                  />
+                  <span className="ml-2">Prediksi benar</span>
+                </label>
+                <label className="block mt-2">
+                  <input
+                    type="radio"
+                    name="feedback"
+                    value="incorrect"
+                    checked={feedback === "incorrect"}
+                    onChange={() => setFeedback("incorrect")}
+                    disabled={loading}
+                  />
+                  <span className="ml-2">Prediksi salah</span>
+                </label>
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+              >
+                {loading ? "Mengirim..." : "Kirim Feedback"}
+              </button>
+            </form>
+            {message && <p className="mt-4 text-sm text-green-600">{message}</p>}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
