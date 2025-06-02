@@ -16,6 +16,7 @@ export default function EmailListPage() {
   const [emails, setEmails] = useState<Email[]>([]);
   const [page, setPage] = useState<number>(1);
   const [filter, setFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [hasNext, setHasNext] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const API_BASE = "http://localhost:5000";
@@ -24,7 +25,7 @@ export default function EmailListPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${API_BASE}/emails?page=${page}&filter=${filter}`,
+        `${API_BASE}/emails?page=${page}&filter=${filter}&search=${encodeURIComponent(searchQuery)}`,
         { cache: "no-store" }
       );
       const data = await res.json();
@@ -44,24 +45,46 @@ export default function EmailListPage() {
     fetchEmails();
   }, [page, filter]);
 
+  // Fetch again when pressing Enter or after typing
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      setPage(1); // reset to page 1
+      fetchEmails();
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 text-gray-800">
-      <h1 className="text-3xl font-semibold mb-6 text-center">📨 Email Spam Filter</h1>
+      <h1 className="text-3xl font-semibold mb-6 text-center">📧 Email Risk Monitor (E.R.M.)</h1>
 
-      <div className="flex justify-between items-center mb-6">
-        <label className="text-sm font-medium mr-2">Filter:</label>
-        <select
-          value={filter}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="flex items-center space-x-2">
+          <label className="text-sm font-medium">Filter:</label>
+          <select
+            value={filter}
+            onChange={(e) => {
+              setPage(1);
+              setFilter(e.target.value);
+            }}
+            className="border rounded px-3 py-1 text-sm"
+          >
+            <option value="all">All</option>
+            <option value="spam">Spam</option>
+            <option value="ham">Ham</option>
+          </select>
+        </div>
+
+        <input
+          type="text"
+          placeholder="Search by subject..."
+          value={searchQuery}
           onChange={(e) => {
-            setPage(1);
-            setFilter(e.target.value);
+            setSearchQuery(e.target.value);
           }}
-          className="border rounded px-3 py-1 text-sm"
-        >
-          <option value="all">All</option>
-          <option value="spam">Spam</option>
-          <option value="ham">Ham</option>
-        </select>
+          className="border rounded px-3 py-1 text-sm w-full md:w-64"
+        />
       </div>
 
       {loading ? (
@@ -74,7 +97,7 @@ export default function EmailListPage() {
 
             return (
               <li
-                key={slug}
+                key={slugId}
                 className="bg-white rounded-xl shadow hover:shadow-md transition-shadow border border-gray-200 p-4"
               >
                 <Link href={`/emails/${slugId}`}>
@@ -86,11 +109,11 @@ export default function EmailListPage() {
                   <span className={`px-2 py-0.5 rounded-full text-xs font-semibold mr-2 
                   ${
                     email.label === "SPAM"
-                        ? "bg-red-600 text-white border border-red-700" 
-                        : "bg-green-100 text-green-600"
-                    }`}>
+                      ? "bg-red-600 text-white border border-red-700" 
+                      : "bg-green-100 text-green-600"
+                  }`}>
                     {email.label}
-                </span>
+                  </span>
                   Confidence: {email.confidence.toFixed(2)}
                 </div>
                 <p className="text-sm text-gray-700">{email.preview}</p>

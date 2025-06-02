@@ -9,18 +9,30 @@ export default function LandingPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.push('/emails');
-    }, 2000); // tunggu 2 detik sebelum redirect
+    }, 2000); // Redirect setelah 2 detik
 
     return () => clearTimeout(timer);
   }, [router]);
 
   return (
     <main style={styles.container}>
-      <img
-        src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
-        alt="Gmail Logo"
-        style={styles.logo}
-      />
+      <div style={styles.loaderWrapper}>
+        <img
+          src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
+          alt="Gmail Logo"
+          style={styles.logo}
+        />
+        <p style={styles.text}>Loading Gmail...</p>
+      </div>
+      <style jsx>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+        .blinking {
+          animation: blink 1s infinite;
+        }
+      `}</style>
     </main>
   );
 }
@@ -31,30 +43,24 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
+    flexDirection: 'column',
+  },
+  loaderWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   logo: {
-    width: 150,
+    width: 100,
+    height: 100,
+    animation: 'blink 1s infinite', // Blink animasi langsung di inline style
+  },
+  text: {
+    marginTop: 20,
+    fontSize: 18,
+    color: '#555',
+    fontFamily: 'Arial, sans-serif',
     animation: 'blink 1s infinite',
   },
 };
-
-// Animasi CSS global untuk blink
-// Jika pakai file CSS global, masukkan @keyframes di situ,
-// tapi di sini kita inject dengan <style> di Head:
-
-import React from 'react';
-
-export function Head() {
-  return (
-    <style>{`
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.3; }
-      }
-      img {
-        animation: blink 1s infinite;
-      }
-    `}</style>
-  );
-}
