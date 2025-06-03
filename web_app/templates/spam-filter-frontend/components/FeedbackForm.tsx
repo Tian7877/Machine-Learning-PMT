@@ -12,6 +12,7 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const API_BASE = "http://localhost:5000";
 
@@ -37,6 +38,8 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
         setMessage(data.message);
         setFeedback("");
         setIsOpen(false);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
       } else {
         setMessage("Gagal mengirim feedback: " + data.message);
       }
@@ -48,6 +51,13 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
 
   return (
     <>
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow z-50 animate-fade-in-out">
+          {message}
+        </div>
+      )}
+
       <button
         onClick={() => setIsOpen(true)}
         className="px-4 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-500"
@@ -56,7 +66,7 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
             <button
               onClick={() => setIsOpen(false)}
@@ -98,7 +108,6 @@ export default function FeedbackForm({ emailBody, predictedLabel }: FeedbackForm
                 {loading ? "Mengirim..." : "Kirim Feedback"}
               </button>
             </form>
-            {message && <p className="mt-4 text-sm text-green-600">{message}</p>}
           </div>
         </div>
       )}

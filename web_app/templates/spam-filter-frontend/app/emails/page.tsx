@@ -75,16 +75,38 @@ export default function EmailListPage() {
             <option value="ham">Ham</option>
           </select>
         </div>
-
-        <input
-          type="text"
-          placeholder="Search by subject..."
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          className="border rounded px-3 py-1 text-sm w-full md:w-64"
-        />
+        <div className="flex items-center space-x-2 w-full md:w-auto">
+            <input
+              type="text"
+              placeholder="Search by subject..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+              className="border rounded px-3 py-1 text-sm w-full md:w-64"
+            />
+            <button
+              onClick={() => fetchEmails()}
+              className="p-2 rounded hover:bg-gray-200 transition"
+              title="Refresh"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-gray-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 4v6h6M20 20v-6h-6M4 10a8.003 8.003 0 0113.9-5.9M20 14a8.003 8.003 0 01-13.9 5.9"
+                />
+              </svg>
+            </button>
+          </div>
+        
       </div>
 
       {loading ? (
