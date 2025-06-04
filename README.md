@@ -29,26 +29,21 @@ Pastikan Anda telah menginstal:
    pip install -r requirement.txt
 Jalankan backend Flask:
 
-bash
-Copy
-Edit
+```bash
+
 python -m web_app.app
-2. Menjalankan Frontend
+
+**###2. Menjalankan Frontend**
 Arahkan terminal ke folder frontend:
 
-bash
-Copy
-Edit
+```bash
 cd web_app/templates/spam-filter-frontend
+
 Install semua dependensi React:
 
-bash
-Copy
-Edit
+```bash
 npm install
 Jalankan server development:
 
-bash
-Copy
-Edit
+```bash
 npm run dev
