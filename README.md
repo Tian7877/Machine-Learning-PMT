@@ -69,7 +69,6 @@ Pastikan Anda telah menginstal:
 ...
 web_app/
 ├── app.py
-├── requirement.txt
 └── templates/
     └── spam-filter-frontend/
         ├── package.json
