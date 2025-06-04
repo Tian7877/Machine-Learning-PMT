@@ -1,8 +1,3 @@
-Berikut adalah versi yang sudah diperbaiki dan diformat dengan benar untuk README.md-mu:
-
-markdown
-Copy
-Edit
 # Spam Filter Website
 
 Proyek ini terdiri dari dua bagian utama: **Backend (Python Flask)** dan **Frontend (React.js)**. Pastikan mengikuti langkah-langkah di bawah ini untuk menjalankan aplikasi dengan benar.
@@ -27,29 +22,59 @@ Pastikan Anda telah menginstal:
 
    ```bash
    pip install -r requirement.txt
-Jalankan backend Flask:
+   ```
 
-bash
-Copy
-Edit
-python -m web_app.app
-2. Menjalankan Frontend
-Arahkan terminal ke folder frontend:
+3. Jalankan backend Flask:
 
-bash
-Copy
-Edit
-cd web_app/templates/spam-filter-frontend
-Install semua dependensi React:
+   ```bash
+   python -m web_app.app
+   ```
 
-bash
-Copy
-Edit
-npm install
-Jalankan server development:
+---
 
-bash
-Copy
-Edit
-npm run dev
+### 2. Menjalankan Frontend
+
+1. Arahkan terminal ke folder frontend:
+
+   ```bash
+   cd web_app/templates/spam-filter-frontend
+   ```
+
+2. Install semua dependensi React:
+
+   ```bash
+   npm install
+   ```
+
+3. Jalankan server development:
+
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🌐 Akses Website
+
+- Frontend tersedia di: [http://localhost:3000](http://localhost:3000)
+- Backend (API Flask) tersedia di: [http://localhost:5000](http://localhost:5000)
+
+> **Catatan:** Jalankan backend terlebih dahulu agar frontend dapat terhubung dengan API dengan benar.
+
+---
+
+## 📁 Struktur Proyek (Singkat)
+
+```
+web_app/
+├── app.py
+├── requirement.txt
+└── templates/
+    └── spam-filter-frontend/
+        ├── package.json
+        └── ...
+```
+
+---
+
 
