@@ -8,7 +8,7 @@ Proyek ini terdiri dari dua bagian utama: **Backend (Python Flask)** dan **Front
 
 Pastikan Anda telah menginstal:
 
-- **Python 3.x**
+- **Python 3.10**
 - **Node.js** dan **npm**
 
 ---
