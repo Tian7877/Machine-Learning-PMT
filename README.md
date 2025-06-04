@@ -1,4 +1,4 @@
-Berikut adalah isi lengkap untuk file README.md yang bisa langsung kamu salin ke proyekmu:
+Berikut adalah versi yang sudah diperbaiki dan diformat dengan benar untuk README.md-mu:
 
 markdown
 Copy
@@ -22,27 +22,34 @@ Pastikan Anda telah menginstal:
 
 ### 1. Menjalankan Backend
 
-1. Buka terminal dan arahkan ke direktori proyek (di mana file `requirement.txt` berada).
+1. Buka terminal dan arahkan ke direktori proyek (tempat file `requirement.txt` berada).
 2. Install semua dependensi Python:
 
    ```bash
    pip install -r requirement.txt
-   
 Jalankan backend Flask:
 
-```bash
-   python -m web_app.app
-
-**###2. Menjalankan Frontend**
-
+bash
+Copy
+Edit
+python -m web_app.app
+2. Menjalankan Frontend
 Arahkan terminal ke folder frontend:
-```bash
-   cd web_app/templates/spam-filter-frontend
 
+bash
+Copy
+Edit
+cd web_app/templates/spam-filter-frontend
 Install semua dependensi React:
-```bash
-   npm install
 
+bash
+Copy
+Edit
+npm install
 Jalankan server development:
-```bash
-   npm run dev
+
+bash
+Copy
+Edit
+npm run dev
+
