@@ -10,15 +10,6 @@ def run_training(iteration):
     model, vectorizer = train_model(df, choice=iteration)
     save_model(model, vectorizer)
 
-def run_inference():
-    print("=== INFERENCE MODE ===")
-    model, vectorizer = load_model()
-    while True:
-        text = input("\nMasukkan teks/email (atau ketik 'exit'): ")
-        if text.lower() in ["exit", "quit"]:
-            break
-        label, prob = predict_spam(text, model, vectorizer)
-        print(f"Prediksi: {label} (Confidence: {prob:.2f})")
 
 def run_web_app():
     print("=== MENJALANKAN WEB APP ===")
