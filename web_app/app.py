@@ -17,8 +17,8 @@ app = Flask(__name__)
 CORS(app)  # Aktifkan CORS untuk semua route
 
 # Konfigurasi email
-EMAIL_USER = "asepspakbor444@gmail.com"
-EMAIL_PASS = "kmwy hbwb tpyg yusk"
+EMAIL_USER = "[email_user]@gmail.com"  # Ganti dengan email Anda
+EMAIL_PASS = "[email_pass]"  # Ganti dengan app password Anda
 PER_PAGE = 10
 
 

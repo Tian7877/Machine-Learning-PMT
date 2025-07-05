@@ -15,7 +15,12 @@ Pastikan Anda telah menginstal:
 
 ## 🚀 Cara Menjalankan Proyek
 
-### 1. Menjalankan Backend
+### 1. Sesuaikan Username email dan app password
+1. Buka kode app.py
+2. Ubah variabel EMAIL_USER dan EMAIL_PASS menjadi username email dan app password dari email anda
+3. Untuk GMail, tata cara mengatur app password dapat dilihat pada link berikut [Google Support](https://support.google.com/mail/answer/185833?hl=en)
+
+### 2. Menjalankan Backend
 
 1. Buka terminal dan arahkan ke direktori proyek (tempat file `requirement.txt` berada).
 2. Install semua dependensi Python:
@@ -32,7 +37,7 @@ Pastikan Anda telah menginstal:
 
 ---
 
-### 2. Menjalankan Frontend
+### 3. Menjalankan Frontend
 
 1. Arahkan terminal ke folder frontend:
 
