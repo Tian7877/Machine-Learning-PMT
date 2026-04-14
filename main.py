@@ -1,16 +1,17 @@
-from src.train import load_and_prepare_data, train_model, save_model
 from src.inference import load_model, predict_spam
+from src.train import load_and_prepare_data, train_model, save_model
 import subprocess
 import sys
 import os
 
+#Training model
 def run_training(iteration):
     print("=== TRAINING MODE ===")
     df = load_and_prepare_data("data/email_spam_indo.csv")
     model, vectorizer = train_model(df, choice=iteration)
     save_model(model, vectorizer)
 
-
+#Membuka web
 def run_web_app():
     print("=== MENJALANKAN WEB APP ===")
     print("Aplikasi web akan dijalankan di http://localhost:5000")
